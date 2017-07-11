@@ -38,6 +38,13 @@ typedef NS_ENUM(NSUInteger, MovieViewState) {   // 视频切换 状态
 
 typedef void(^HR_PalyerViewResults)(NSDictionary *results);         // 传递 结果 与 说明
 
+@protocol HR_PalyerViewDelegate <NSObject>
+
+- (void)HR_PalyerViewDelegateBackButton:(UIButton *)aButton;
+
+@end
+
+
 @interface HR_PalyerView : UIView<HR_VideoShowViewDelegate>
 
 
@@ -45,7 +52,7 @@ typedef void(^HR_PalyerViewResults)(NSDictionary *results);         // 传递 �
 @property (nonatomic,assign) CGRect oldFrame;                // 原始大小
 
 
-
+@property (nonatomic,assign) id<HR_PalyerViewDelegate> delegate;
 
 
 #pragma mark --------------HenryGao 资源

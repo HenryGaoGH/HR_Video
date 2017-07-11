@@ -248,11 +248,12 @@
 }
 - (void)HR_DissPlayerView:(HR_PalyerViewResults)aResult{    // 停止 播放 并重置 视频状态
     //清空 监听 移除 控件
-    
+    [_hr_Player pause];
+    [self dismissObserver];
+    [self removeFromSuperview];
     
 }
     
-
 
 - (void)HR_ChangeFullWidth{
     
@@ -328,9 +329,16 @@
                 return;
             }
             
+            // 传递 点击 Button 按钮
+            if (self.delegate != nil && [self.delegate respondsToSelector:@selector(HR_PalyerViewDelegateBackButton:)]) {
+                [self.delegate HR_PalyerViewDelegateBackButton:aButton];
+            }
             [self HR_DissPlayerView:^(NSDictionary *results) {
                 NSLog(@"---------%@",results);
             }];
+            
+            
+            
         }
             break;
         case 101:{
@@ -381,7 +389,7 @@
  * 写点说明。。。。。
  **/
 - (void)moviePlayDidEnd:(NSNotification *)aNoF{
-    
+    NSLog(@"我还在跑结束");
     [_hr_Player seekToTime:kCMTimeZero completionHandler:^(BOOL finished) {
         [_hr_Player play];
     }];
@@ -390,7 +398,7 @@
     CMTimeShow(_hr_playerItem.currentTime);
 }
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context{
-    
+    NSLog(@"我还在跑值监听");
     if ([keyPath isEqualToString:@"status"]) {
         
         AVPlayerItemStatus status = AVPlayerItemStatusUnknown;
@@ -422,7 +430,7 @@
         
         CMTimeRange timeRange = [loadedTimeRanges.firstObject CMTimeRangeValue];// 获取已缓冲区域
         
-        float startSeconds = CMTimeGetSeconds(timeRange.start);
+//        float startSeconds = CMTimeGetSeconds(timeRange.start);
         float durationSeconds = CMTimeGetSeconds(timeRange.duration);
         
         CMTime duration = _hr_playerItem.duration;
@@ -548,7 +556,8 @@
     return [regextestct evaluateWithObject:tempStr];
 }
 - (NSString *)HR_convertTime:(CMTime )aTime{ // 时间转换
-    CGFloat totalSecond = aTime.value / aTime.timescale;// 转换成秒
+    CGFloat totalSecond = .0;
+//    totalSecond = aTime.value / aTime.timescale;// 转换成秒
     totalSecond = CMTimeGetSeconds(aTime);   // 获取 精准秒
     
     NSDate *d = [NSDate dateWithTimeIntervalSince1970:totalSecond];
@@ -589,7 +598,7 @@
         [_hr_playerItem removeObserver:self forKeyPath:@"loadedTimeRanges"];
     }
     if (_hr_Player){
-        [_hr_Player removeTimeObserver:self];
+//        [_hr_Player removeTimeObserver:_hr_Player];
     }
     
 }
@@ -606,6 +615,7 @@
         NSString *tempcurrTime = [aa HR_convertTime:time]; // 当前时间
         aa.hr_videoView.nowTime = tempcurrTime;
         aa.hr_videoView.playProgress = CMTimeGetSeconds(time);
+        NSLog(@"我还在跑");
     }];
     
     
